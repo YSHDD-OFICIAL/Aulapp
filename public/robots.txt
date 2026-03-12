@@ -1,0 +1,17 @@
+# robots.txt para CEA Biométrico
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /private/
+Disallow: /tmp/
+Disallow: /exports/
+Disallow: /pages/private/
+
+# Sitemap
+Sitemap: https://cea-biometrico.com/sitemap.xml
+
+# Crawl delay
+Crawl-delay: 10
+
+# Host
+Host: https://cea-biometrico.com
