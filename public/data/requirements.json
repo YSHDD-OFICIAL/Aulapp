@@ -1,0 +1,87 @@
+{
+  "ley": "Ley 2026",
+  "fecha_implementacion": "2024-01-01",
+  "categorias": [
+    {
+      "codigo": "B1",
+      "nombre": "Automóvil",
+      "requisitos": {
+        "edad_minima": 16,
+        "teoria": {
+          "horas": 25,
+          "modulos": [
+            "Señales de tránsito",
+            "Normas de circulación",
+            "Mecánica básica",
+            "Primeros auxilios",
+            "Legislación"
+          ]
+        },
+        "practica": {
+          "horas": 25,
+          "modulos": [
+            "Conducción urbana",
+            "Estacionamiento",
+            "Cambio de carril",
+            "Rotondas",
+            "Conducción nocturna"
+          ]
+        }
+      }
+    },
+    {
+      "codigo": "C1",
+      "nombre": "Camión",
+      "requisitos": {
+        "edad_minima": 18,
+        "teoria": {
+          "horas": 30,
+          "modulos": [
+            "Legislación especial",
+            "Carga y estiba",
+            "Documentación",
+            "Seguridad vial",
+            "Mecánica pesada"
+          ]
+        },
+        "practica": {
+          "horas": 35,
+          "modulos": [
+            "Maniobras con acoplado",
+            "Conducción en pendientes",
+            "Reversa con acoplado",
+            "Inspección vehicular",
+            "Conducción defensiva"
+          ]
+        }
+      }
+    },
+    {
+      "codigo": "A2",
+      "nombre": "Motocicleta",
+      "requisitos": {
+        "edad_minima": 16,
+        "teoria": {
+          "horas": 25,
+          "modulos": [
+            "Equipo de protección",
+            "Técnicas de conducción",
+            "Equilibrio",
+            "Señalización",
+            "Prevención"
+          ]
+        },
+        "practica": {
+          "horas": 15,
+          "modulos": [
+            "Slalom",
+            "Frenado de emergencia",
+            "Curvas cerradas",
+            "Conducción en ciudad",
+            "Conducción en carretera"
+          ]
+        }
+      }
+    }
+  ]
+}
