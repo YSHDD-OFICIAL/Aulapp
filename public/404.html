@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>404 - Página no encontrada | CEA Biométrico</title>
+    <link rel="stylesheet" href="/css/main.css">
+    <style>
+        .error-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            text-align: center;
+            padding: 2rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .error-code {
+            font-size: 8rem;
+            font-weight: 800;
+            line-height: 1;
+            text-shadow: 4px 4px 0 rgba(0,0,0,0.1);
+            animation: glitch 3s infinite;
+        }
+        
+        .error-title {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+        
+        .error-message {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+            max-width: 500px;
+        }
+        
+        .error-actions {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary {
+            background: white;
+            color: #764ba2;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+        
+        .btn-secondary {
+            background: transparent;
+            color: white;
+            border: 2px solid white;
+        }
+        
+        .btn-secondary:hover {
+            background: rgba(255,255,255,0.1);
+        }
+        
+        @keyframes glitch {
+            0%, 100% { transform: none; opacity: 1; }
+            92% { transform: skew(0); }
+            93% { transform: skew(2deg); }
+            94% { transform: skew(-2deg); }
+            95% { transform: skew(0); }
+        }
+        
+        .search-box {
+            margin-top: 2rem;
+            width: 100%;
+            max-width: 400px;
+        }
+        
+        .search-input {
+            width: 100%;
+            padding: 1rem;
+            border: none;
+            border-radius: 50px;
+            font-size: 1rem;
+            outline: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="error-container">
+        <div class="error-code">404</div>
+        <h1 class="error-title">¡Ups! Página no encontrada</h1>
+        <p class="error-message">
+            La página que estás buscando no existe o ha sido movida.
+        </p>
+        
+        <div class="error-actions">
+            <a href="/" class="btn btn-primary">Ir al inicio</a>
+            <a href="/dashboard.html" class="btn btn-secondary">Dashboard</a>
+            <a href="/pages/login.html" class="btn btn-secondary">Iniciar sesión</a>
+        </div>
+        
+        <div class="search-box">
+            <input type="text" class="search-input" placeholder="Buscar en el sitio...">
+        </div>
+        
+        <div style="margin-top: 3rem; font-size: 0.9rem;">
+            <p>¿Necesitas ayuda? <a href="/contacto" style="color: white; text-decoration: underline;">Contacta a soporte</a></p>
+        </div>
+    </div>
+</body>
+</html>
