@@ -1,0 +1,8 @@
+# Security contact information
+Contact: mailto:security@cea-biometrico.com
+Encryption: https://cea-biometrico.com/pgp-key.txt
+Acknowledgement: https://cea-biometrico.com/hall-of-fame
+Policy: https://cea-biometrico.com/security-policy
+Preferred-Languages: es, en
+Canonical: https://cea-biometrico.com/.well-known/security.txt
+Expires: 2025-01-01T00:00:00.000Z
