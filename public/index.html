@@ -3,23 +3,139 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CEA Biométrico</title>
+    <title>CEA Biométrico - Sistema de Gestión para Centros de Enseñanza Automovilística</title>
+    
+    <!-- Meta tags básicos -->
+    <meta name="description" content="Sistema de Gestión Biométrica para Centros de Enseñanza Automovilística con validación de huella digital y conteo de horas en tiempo real según Ley 2026">
+    <meta name="keywords" content="CEA, biométrico, huella digital, escuela de conducción, ley 2026, horas de conducción">
+    <meta name="author" content="CEA Biométrico">
+    <meta name="robots" content="index, follow">
+    
+    <!-- Meta tags para redes sociales -->
+    <meta property="og:title" content="CEA Biométrico - Sistema de Gestión">
+    <meta property="og:description" content="Sistema biométrico para centros de enseñanza automovilística">
+    <meta property="og:image" content="/assets/images/og-image.jpg">
+    <meta property="og:url" content="https://cea-biometrico.com">
+    <meta name="twitter:card" content="summary_large_image">
     
     <!-- Meta tags PWA -->
     <link rel="manifest" href="/manifest.json">
     <meta name="theme-color" content="#1e3c72">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    
-    <!-- CSS -->
-    <link rel="stylesheet" href="/css/variables.css">
-    <link rel="stylesheet" href="/css/reset.css">
-    <link rel="stylesheet" href="/css/main.css">
-    <link rel="stylesheet" href="/css/responsive.css">
+    <meta name="apple-mobile-web-app-title" content="CEA Biométrico">
+    <meta name="application-name" content="CEA Biométrico">
+    <meta name="msapplication-TileColor" content="#1e3c72">
+    <meta name="msapplication-TileImage" content="/assets/icons/ms-icon-144x144.png">
     
     <!-- Iconos -->
-    <link rel="icon" type="image/png" href="/assets/icons/favicon.ico">
-    <link rel="apple-touch-icon" href="/assets/icons/icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/assets/icons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/assets/icons/favicon-16x16.png">
+    <link rel="apple-touch-icon" href="/assets/icons/apple-icon.png">
+    <link rel="apple-touch-icon" sizes="57x57" href="/assets/icons/apple-icon-57x57.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="/assets/icons/apple-icon-60x60.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="/assets/icons/apple-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="/assets/icons/apple-icon-76x76.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="/assets/icons/apple-icon-114x114.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="/assets/icons/apple-icon-120x120.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="/assets/icons/apple-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="/assets/icons/apple-icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/assets/icons/apple-icon-180x180.png">
+    
+    <!-- CSS - Carga crítica primero -->
+    <link rel="stylesheet" href="/css/variables.css">
+    <link rel="stylesheet" href="/css/reset.css">
+    <link rel="preload" href="/css/main.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <link rel="preload" href="/css/responsive.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    
+    <!-- CSS no crítico carga diferida -->
+    <noscript>
+        <link rel="stylesheet" href="/css/main.css">
+        <link rel="stylesheet" href="/css/responsive.css">
+    </noscript>
+    
+    <!-- Fuentes pre-cargadas -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Estilos críticos inline para First Paint -->
+    <style>
+        /* Estilos críticos mínimos para que la página se vea bien inmediatamente */
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .initial-loader {
+            text-align: center;
+            color: white;
+            padding: 2rem;
+        }
+        
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+            margin: 0 auto 1rem;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .offline-status {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            z-index: 9999;
+            transition: all 0.3s ease;
+        }
+        
+        .offline-status.online {
+            background: #4caf50;
+            color: white;
+        }
+        
+        .offline-status.offline {
+            background: #f44336;
+            color: white;
+        }
+        
+        .install-pwa {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            background: white;
+            color: #1e3c72;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            z-index: 9998;
+            animation: slideUp 0.5s ease;
+        }
+        
+        @keyframes slideUp {
+            from { transform: translateY(100px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+    </style>
 </head>
 <body>
     <!-- App Container -->
@@ -28,6 +144,7 @@
         <div class="initial-loader">
             <div class="spinner"></div>
             <p>Cargando sistema biométrico CEA...</p>
+            <small style="opacity: 0.8; margin-top: 1rem; display: block;">Versión 1.0.0</small>
         </div>
     </div>
     
@@ -46,22 +163,213 @@
         </div>
     </template>
     
-    <!-- Scripts -->
-    <script src="/js/database.js"></script>
-    <script src="/js/auth.js"></script>
-    <script src="/js/biometric.js"></script>
-    <script src="/js/heartbeats.js"></script>
-    <script src="/js/export.js"></script>
-    <script src="/js/router.js"></script>
-    <script src="/js/app.js"></script>
+    <!-- Template para toast notifications -->
+    <template id="toast-template">
+        <div class="toast-notification">
+            <div class="toast-icon"></div>
+            <div class="toast-content">
+                <div class="toast-title"></div>
+                <div class="toast-message"></div>
+            </div>
+            <button class="toast-close">&times;</button>
+        </div>
+    </template>
+    
+    <!-- Template para alerta de confirmación -->
+    <template id="confirm-template">
+        <div class="confirm-overlay">
+            <div class="confirm-dialog">
+                <h3 class="confirm-title"></h3>
+                <p class="confirm-message"></p>
+                <div class="confirm-actions">
+                    <button class="btn btn-secondary confirm-cancel">Cancelar</button>
+                    <button class="btn btn-primary confirm-ok">Aceptar</button>
+                </div>
+            </div>
+        </div>
+    </template>
+    
+    <!-- Scripts críticos - deben cargar rápido -->
+    <script>
+        // Detectar modo offline inmediatamente
+        (function() {
+            const isOnline = navigator.onLine;
+            const statusDiv = document.createElement('div');
+            statusDiv.className = `offline-status ${isOnline ? 'online' : 'offline'}`;
+            statusDiv.innerHTML = isOnline ? '🟢 En línea' : '🔴 Sin conexión';
+            document.body.appendChild(statusDiv);
+            
+            window.addEventListener('online', function() {
+                statusDiv.className = 'offline-status online';
+                statusDiv.innerHTML = '🟢 En línea';
+            });
+            
+            window.addEventListener('offline', function() {
+                statusDiv.className = 'offline-status offline';
+                statusDiv.innerHTML = '🔴 Sin conexión';
+            });
+        })();
+    </script>
+    
+    <!-- Scripts diferidos con lazy loading -->
+    <script defer src="/js/database.js"></script>
+    <script defer src="/js/auth.js"></script>
+    <script defer src="/js/biometric.js"></script>
+    <script defer src="/js/heartbeats.js"></script>
+    <script defer src="/js/export.js"></script>
+    <script defer src="/js/validators.js"></script>
+    <script defer src="/js/formatters.js"></script>
+    <script defer src="/js/offline.js"></script>
+    <script defer src="/js/notifications.js"></script>
+    <script defer src="/js/charts.js"></script>
+    <script defer src="/js/store.js"></script>
+    <script defer src="/js/api.js"></script>
+    <script defer src="/js/progress-calculator.js"></script>
+    
+    <!-- Componentes -->
+    <script defer src="/js/components/circular-progress.js"></script>
+    <script defer src="/js/components/biometric-modal.js"></script>
+    <script defer src="/js/components/vehicle-table.js"></script>
+    <script defer src="/js/components/student-stepper.js"></script>
+    <script defer src="/js/components/heartbeat-indicator.js"></script>
+    
+    <!-- Router y App (deben cargar al final) -->
+    <script defer src="/js/router.js"></script>
+    <script defer src="/js/app.js"></script>
+    <script defer src="/js/main.js"></script>
+    
+    <!-- TypeScript compilado (si existe) -->
+    <script defer src="/ts/main.js"></script>
+    
+    <!-- WebAssembly loader -->
+    <script defer src="/wasm/loader.js"></script>
     
     <!-- Service Worker -->
     <script>
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('/sw.js')
-                .then(reg => console.log('✅ Service Worker registrado'))
-                .catch(err => console.error('❌ Error registrando SW:', err));
+            window.addEventListener('load', function() {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(function(registration) {
+                        console.log('✅ Service Worker registrado con éxito:', registration.scope);
+                        
+                        // Verificar actualizaciones
+                        registration.addEventListener('updatefound', function() {
+                            const newWorker = registration.installing;
+                            console.log('🔄 Nueva versión del Service Worker detectada');
+                            
+                            newWorker.addEventListener('statechange', function() {
+                                if (newWorker.state === 'installed') {
+                                    if (navigator.serviceWorker.controller) {
+                                        console.log('🆕 Nueva versión disponible. Recarga para actualizar.');
+                                        // Mostrar notificación de actualización
+                                        if (window.CEANotifications) {
+                                            CEANotifications.send('Actualización disponible', {
+                                                body: 'Hay una nueva versión del sistema. Recarga para actualizar.',
+                                                tag: 'update-available'
+                                            });
+                                        }
+                                    }
+                                }
+                            });
+                        });
+                    })
+                    .catch(function(error) {
+                        console.error('❌ Error registrando Service Worker:', error);
+                    });
+                
+                // Escuchar mensajes del Service Worker
+                navigator.serviceWorker.addEventListener('message', function(event) {
+                    console.log('📨 Mensaje del Service Worker:', event.data);
+                    
+                    if (event.data.type === 'CACHE_UPDATED') {
+                        console.log('📦 Cache actualizado:', event.data.url);
+                    }
+                });
+            });
+            
+            // Sincronización periódica
+            navigator.serviceWorker.ready.then(function(registration) {
+                if ('periodicSync' in registration) {
+                    try {
+                        registration.periodicSync.register('sync-heartbeats', {
+                            minInterval: 12 * 60 * 60 * 1000 // 12 horas
+                        });
+                    } catch (error) {
+                        console.log('Periodic sync no soportado:', error);
+                    }
+                }
+            });
         }
+        
+        // Detectar instalación PWA
+        let deferredPrompt;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            
+            // Mostrar botón de instalación después de 2 segundos
+            setTimeout(() => {
+                if (!document.querySelector('.install-pwa')) {
+                    const installBtn = document.createElement('button');
+                    installBtn.className = 'install-pwa';
+                    installBtn.innerHTML = '📱 Instalar App';
+                    installBtn.onclick = async () => {
+                        if (!deferredPrompt) return;
+                        
+                        deferredPrompt.prompt();
+                        const { outcome } = await deferredPrompt.userChoice;
+                        console.log('Resultado instalación:', outcome);
+                        
+                        deferredPrompt = null;
+                        installBtn.remove();
+                    };
+                    
+                    document.body.appendChild(installBtn);
+                    
+                    // Ocultar después de 30 segundos si no se usa
+                    setTimeout(() => {
+                        if (installBtn.parentNode) {
+                            installBtn.remove();
+                        }
+                    }, 30000);
+                }
+            }, 2000);
+        });
+        
+        // Analíticas básicas
+        window.addEventListener('load', function() {
+            console.log('📊 CEA Biométrico cargado - Versión 1.0.0');
+            console.log('🕒 Tiempo de carga:', performance.now().toFixed(0), 'ms');
+            
+            // Reportar Web Vitals (opcional)
+            if ('web-vitals' in window) {
+                // Enviar métricas
+            }
+        });
     </script>
+    
+    <!-- Web Vitals (opcional, para medir rendimiento) -->
+    <script defer src="https://unpkg.com/web-vitals@3/dist/web-vitals.iife.js"></script>
+    
+    <!-- Google Analytics (opcional) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-XXXXX-Y"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'UA-XXXXX-Y', { 'anonymize_ip': true });
+    </script>
+    
+    <!-- Pre-conexiones para recursos externos -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://www.googletagmanager.com">
+    
+    <!-- DNS prefetch -->
+    <link rel="dns-prefetch" href="https://fonts.googleapis.com">
+    <link rel="dns-prefetch" href="https://www.googletagmanager.com">
+    
+    <!-- Preload de recursos críticos -->
+    <link rel="preload" href="/assets/images/logo.svg" as="image">
+    <link rel="preload" href="/assets/icons/favicon.ico" as="image">
 </body>
 </html>
