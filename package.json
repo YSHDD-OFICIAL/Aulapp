@@ -1,0 +1,31 @@
+{
+  "name": "cea-biometrico",
+  "version": "1.0.0",
+  "description": "Sistema de Gestión Biométrica para Centros de Enseñanza Automovilística",
+  "main": "public/index.html",
+  "scripts": {
+    "start": "npx http-server public -p 3000",
+    "dev": "npx http-server public -p 3000 -o",
+    "test": "node tests/test-runner.js",
+    "build:sw": "node scripts/build-sw.js",
+    "icons": "node scripts/generate-icons.js",
+    "export": "node scripts/export-csv.js",
+    "deploy:netlify": "netlify deploy --prod",
+    "deploy:vercel": "vercel --prod"
+  },
+  "keywords": [
+    "biometrico",
+    "cea",
+    "educacion",
+    "conduccion",
+    "pwa",
+    "spa"
+  ],
+  "author": "Esteban Potosi",
+  "license": "MIT",
+  "devDependencies": {
+    "http-server": "^14.1.0",
+    "sharp": "^0.32.0",
+    "csv-writer": "^1.6.0"
+  }
+}
