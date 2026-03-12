@@ -1,0 +1,22 @@
+/* TEAM */
+Desarrollador: Esteban Potosí
+Twitter: @yshddoficial
+GitHub: https://github.com/tuusuario
+Location: Colombia
+Role: Full Stack Developer
+
+/* THANKS */
+Ministerio de Transporte - Ley 2026
+API Bridge RUNT
+Comunidad de Desarrollo Colombiana
+
+/* SITE */
+Standards: HTML5, CSS3, JavaScript, PWA
+Components: Vanilla JS, IndexedDB, LocalStorage
+Softwares: VSCode, Git
+Last update: 2024
+
+/* PROJECT */
+Sistema de Gestión Biométrica para Centros de Enseñanza Automovilística (CEA)
+Versión: 1.0.0
+Licencia: MIT
