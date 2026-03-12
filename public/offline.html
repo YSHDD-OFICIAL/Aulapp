@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sin Conexión - CEA Biométrico</title>
+    <link rel="stylesheet" href="/css/main.css">
+    <style>
+        .offline-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            text-align: center;
+            padding: 2rem;
+            background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+            color: white;
+        }
+        
+        .offline-icon {
+            width: 120px;
+            height: 120px;
+            margin-bottom: 2rem;
+            animation: pulse 2s infinite;
+        }
+        
+        .offline-title {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+        
+        .offline-message {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+        
+        .offline-actions {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: var(--border-radius);
+            text-decoration: none;
+            font-weight: 600;
+            transition: all var(--transition);
+        }
+        
+        .btn-primary {
+            background: white;
+            color: var(--primary);
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .btn-secondary {
+            background: transparent;
+            color: white;
+            border: 2px solid white;
+        }
+        
+        .btn-secondary:hover {
+            background: rgba(255,255,255,0.1);
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        
+        .cached-info {
+            margin-top: 3rem;
+            padding: 1rem;
+            background: rgba(255,255,255,0.1);
+            border-radius: var(--border-radius);
+            max-width: 400px;
+        }
+    </style>
+</head>
+<body>
+    <div class="offline-container">
+        <svg class="offline-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M22 12L18 8V12H6L2 8V16H22V12Z" stroke="white" fill="none"/>
+            <circle cx="12" cy="16" r="2" fill="white"/>
+            <line x1="2" y1="2" x2="22" y2="22" stroke="white"/>
+        </svg>
+        
+        <h1 class="offline-title">Sin conexión a Internet</h1>
+        <p class="offline-message">
+            No te preocupes, puedes seguir usando las funciones offline del sistema.
+        </p>
+        
+        <div class="offline-actions">
+            <a href="/" class="btn btn-primary">Intentar reconectar</a>
+            <a href="/dashboard.html" class="btn btn-secondary">Ir al dashboard</a>
+        </div>
+        
+        <div class="cached-info">
+            <h3>📱 Disponible offline:</h3>
+            <ul style="text-align: left; margin-top: 1rem;">
+                <li>✓ Ver progreso guardado</li>
+                <li>✓ Registrar heartbeats</li>
+                <li>✓ Consultar datos locales</li>
+                <li>✓ Ver horarios cacheados</li>
+            </ul>
+            <p style="margin-top: 1rem; font-size: 0.9rem;">
+                Los datos se sincronizarán automáticamente cuando recuperes la conexión.
+            </p>
+        </div>
+    </div>
+</body>
+</html>
