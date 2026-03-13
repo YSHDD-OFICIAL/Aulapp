@@ -538,4 +538,103 @@ const CECharts = (function() {
 
             for (let i = 0; i < this.data.length; i++) {
                 const value = this.data[i].value;
-          
+                const r = (value / maxValue) * this.radius;
+                const angle = i * this.angleStep - Math.PI / 2;
+                
+                const x = this.centerX + r * Math.cos(angle);
+                const y = this.centerY + r * Math.sin(angle);
+
+                if (i === 0) {
+                    this.ctx.moveTo(x, y);
+                } else {
+                    this.ctx.lineTo(x, y);
+                }
+
+                // Puntos
+                this.ctx.fillStyle = '#fff';
+                this.ctx.strokeStyle = this.options.color;
+                this.ctx.lineWidth = 2;
+                
+                this.ctx.beginPath();
+                this.ctx.arc(x, y, 4, 0, 2 * Math.PI);
+                this.ctx.fill();
+                this.ctx.stroke();
+            }
+
+            this.ctx.closePath();
+            this.ctx.fill();
+            this.ctx.stroke();
+        }
+
+        drawLabels() {
+            for (let i = 0; i < this.data.length; i++) {
+                const angle = i * this.angleStep - Math.PI / 2;
+                const x = this.centerX + (this.radius + 20) * Math.cos(angle);
+                const y = this.centerY + (this.radius + 20) * Math.sin(angle);
+
+                this.ctx.font = '12px var(--font-family-primary)';
+                this.ctx.fillStyle = '#666';
+                this.ctx.textAlign = 'center';
+                this.ctx.textBaseline = 'middle';
+                this.ctx.fillText(this.data[i].label, x, y);
+            }
+        }
+
+        updateData(newData) {
+            this.data = newData;
+            this.draw();
+        }
+    }
+
+    // ===== API PÚBLICA =====
+    return {
+        CircularChart,
+        BarChart,
+        LineChart,
+        RadarChart,
+        
+        // Funciones de utilidad
+        createProgressCircle(canvasId, percentage, color = COLORS.primary[0]) {
+            const chart = new CircularChart(canvasId, {
+                data: [{ value: percentage, label: 'Progreso' }],
+                colors: [color],
+                showPercentage: true
+            });
+            chart.draw();
+            return chart;
+        },
+
+        createBarChart(canvasId, data, options = {}) {
+            const chart = new BarChart(canvasId, {
+                data,
+                ...options
+            });
+            chart.draw();
+            return chart;
+        },
+
+        createLineChart(canvasId, data, options = {}) {
+            const chart = new LineChart(canvasId, {
+                data,
+                ...options
+            });
+            chart.draw();
+            return chart;
+        },
+
+        createRadarChart(canvasId, data, options = {}) {
+            const chart = new RadarChart(canvasId, {
+                data,
+                ...options
+            });
+            chart.draw();
+            return chart;
+        },
+
+        // Colores
+        COLORS
+    };
+})();
+
+// Exponer globalmente
+window.CECharts = CECharts;
