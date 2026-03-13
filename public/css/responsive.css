@@ -1,0 +1,305 @@
+/**
+ * responsive.css - Media queries y diseño responsive
+ */
+
+/* ===== MÓVIL PEQUEÑO (hasta 640px) ===== */
+@media (max-width: 640px) {
+    :root {
+        --header-height: 3.5rem;
+        --font-size-base: 0.875rem;
+        --spacing-4: 0.75rem;
+    }
+    
+    .container {
+        padding: 0 var(--spacing-2);
+    }
+    
+    .dashboard-header {
+        padding: var(--spacing-4);
+    }
+    
+    .dashboard-header h1 {
+        font-size: var(--font-size-xl);
+    }
+    
+    .modulos-grid {
+        grid-template-columns: 1fr;
+        gap: var(--spacing-4);
+    }
+    
+    .circular-progress {
+        width: 150px;
+        height: 150px;
+    }
+    
+    .circular-progress.small {
+        width: 120px;
+        height: 120px;
+    }
+    
+    .hands-container {
+        flex-direction: column;
+        gap: var(--spacing-4);
+    }
+    
+    .hand-svg {
+        width: 120px;
+        height: 240px;
+    }
+    
+    .table-controls {
+        flex-direction: column;
+    }
+    
+    .search-input,
+    .filter-select {
+        width: 100%;
+    }
+    
+    .modal-content {
+        width: 95%;
+        margin: var(--spacing-2);
+    }
+    
+    .login-card {
+        padding: var(--spacing-6);
+    }
+    
+    .admin-stats {
+        grid-template-columns: 1fr;
+    }
+    
+    .toast-notification {
+        left: var(--spacing-4);
+        right: var(--spacing-4);
+        min-width: auto;
+        max-width: none;
+    }
+    
+    .install-pwa {
+        bottom: var(--spacing-4);
+        left: var(--spacing-4);
+        right: var(--spacing-4);
+        width: auto;
+        justify-content: center;
+    }
+    
+    .heartbeat-indicator {
+        bottom: var(--spacing-4);
+        right: var(--spacing-4);
+        font-size: var(--font-size-xs);
+    }
+    
+    .offline-status {
+        top: var(--spacing-2);
+        right: var(--spacing-2);
+        font-size: var(--font-size-xs);
+        padding: var(--spacing-1) var(--spacing-2);
+    }
+    
+    .stepper {
+        flex-wrap: wrap;
+        gap: var(--spacing-2);
+    }
+    
+    .step::after {
+        font-size: 0.6rem;
+    }
+}
+
+/* ===== MÓVIL GRANDE / TABLET PEQUEÑA (641px - 768px) ===== */
+@media (min-width: 641px) and (max-width: 768px) {
+    .container {
+        max-width: 640px;
+    }
+    
+    .modulos-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .hands-container {
+        gap: var(--spacing-4);
+    }
+    
+    .hand-svg {
+        width: 130px;
+        height: 260px;
+    }
+    
+    .table-controls {
+        flex-wrap: wrap;
+    }
+    
+    .search-input {
+        min-width: 200px;
+    }
+    
+    .filter-select {
+        width: 180px;
+    }
+}
+
+/* ===== TABLET (769px - 1024px) ===== */
+@media (min-width: 769px) and (max-width: 1024px) {
+    .container {
+        max-width: 960px;
+    }
+    
+    .modulos-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .hands-container {
+        gap: var(--spacing-6);
+    }
+}
+
+/* ===== ESCRITORIO (1025px - 1280px) ===== */
+@media (min-width: 1025px) and (max-width: 1280px) {
+    .container {
+        max-width: 1024px;
+    }
+    
+    .modulos-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+/* ===== ESCRITORIO GRANDE (1281px en adelante) ===== */
+@media (min-width: 1281px) {
+    .container {
+        max-width: 1200px;
+    }
+    
+    .modulos-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+/* ===== ORIENTACIÓN ESPECÍFICA ===== */
+@media (orientation: landscape) and (max-height: 500px) {
+    .modal-content {
+        max-height: 90vh;
+        overflow-y: auto;
+    }
+    
+    .hands-container {
+        flex-direction: row;
+    }
+    
+    .hand-svg {
+        width: 100px;
+        height: 200px;
+    }
+}
+
+/* ===== ALTA RESOLUCIÓN (RETINA) ===== */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+    .login-logo,
+    .logo {
+        image-rendering: -webkit-optimize-contrast;
+        image-rendering: crisp-edges;
+    }
+}
+
+/* ===== MODO OSCURO DEL SISTEMA ===== */
+@media (prefers-color-scheme: dark) {
+    :root {
+        --white: #1a1a1a;
+        --white-soft: #2d2d2d;
+        --gray-50: #2a2a2a;
+        --gray-100: #333333;
+        --gray-200: #404040;
+        --gray-300: #4d4d4d;
+        --gray-400: #666666;
+        --gray-500: #808080;
+        --gray-600: #999999;
+        --gray-700: #b3b3b3;
+        --gray-800: #cccccc;
+        --gray-900: #e6e6e6;
+        --black: #ffffff;
+    }
+    
+    .card,
+    .modulo-card,
+    .login-card,
+    .vehicle-table-container,
+    .stat-card {
+        background: var(--gray-100);
+        border-color: var(--gray-300);
+    }
+    
+    th {
+        background: var(--gray-200);
+        color: var(--white);
+    }
+    
+    td {
+        color: var(--gray-700);
+    }
+    
+    input,
+    select,
+    textarea {
+        background: var(--gray-200);
+        color: var(--white);
+        border-color: var(--gray-400);
+    }
+    
+    .modal-content {
+        background: var(--gray-100);
+    }
+    
+    .modal-header {
+        border-bottom-color: var(--gray-300);
+    }
+    
+    .modal-footer {
+        border-top-color: var(--gray-300);
+    }
+}
+
+/* ===== IMPRESIÓN ===== */
+@media print {
+    .no-print {
+        display: none !important;
+    }
+    
+    .dashboard-container,
+    .admin-container {
+        background: white;
+        color: black;
+        padding: 0;
+    }
+    
+    .card,
+    .modulo-card {
+        box-shadow: none;
+        border: 1px solid #ccc;
+        break-inside: avoid;
+    }
+    
+    .offline-status,
+    .install-pwa,
+    .heartbeat-indicator {
+        display: none;
+    }
+    
+    a::after {
+        content: " (" attr(href) ")";
+        font-size: 0.8em;
+        font-weight: normal;
+    }
+}
+
+/* ===== REDUCIR MOVIMIENTO ===== */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+}
