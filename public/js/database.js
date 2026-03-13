@@ -582,4 +582,169 @@ const CEADB = (function() {
         return data;
     }
 
-    async function importD
+    async function importData(data) {
+        // Validar estructura
+        if (!data._metadata || !data._metadata.version) {
+            throw new Error('Formato de datos inválido');
+        }
+
+        for (const [storeName, records] of Object.entries(data)) {
+            if (storeName.startsWith('_')) continue;
+
+            if (STORES[storeName]) {
+                for (const record of records) {
+                    await insert(storeName, record);
+                }
+            }
+        }
+
+        console.log('✅ Datos importados correctamente');
+    }
+
+    async function backup() {
+        const data = await exportData();
+        const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `cea_backup_${new Date().toISOString().split('T')[0]}.json`;
+        a.click();
+
+        URL.revokeObjectURL(url);
+
+        return true;
+    }
+
+    async function restore(file) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+
+            reader.onload = async (e) => {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    await importData(data);
+                    resolve(true);
+                } catch (error) {
+                    reject(error);
+                }
+            };
+
+            reader.onerror = () => reject(reader.error);
+            reader.readAsText(file);
+        });
+    }
+
+    // ===== LIMPIEZA =====
+    async function clearStore(storeName) {
+        await ensureDB();
+
+        return new Promise((resolve, reject) => {
+            const transaction = dbInstance.transaction(storeName, 'readwrite');
+            const store = transaction.objectStore(storeName);
+            const request = store.clear();
+
+            request.onsuccess = () => resolve(true);
+            request.onerror = () => reject(request.error);
+        });
+    }
+
+    async function clearAll() {
+        for (const storeName of Object.values(STORES)) {
+            await clearStore(storeName);
+        }
+
+        // Limpiar localStorage
+        localStorage.clear();
+        initLocalStorage();
+
+        console.log('🗑️ Todos los datos eliminados');
+    }
+
+    // ===== UTILIDADES =====
+    async function ensureDB() {
+        if (!isInitialized) {
+            await init();
+        }
+        return dbInstance;
+    }
+
+    function processPendingTransactions() {
+        while (pendingTransactions.length > 0) {
+            const transaction = pendingTransactions.shift();
+            transaction.resolve();
+        }
+    }
+
+    function getDBStatus() {
+        return {
+            initialized: isInitialized,
+            stores: Object.keys(STORES),
+            pendingSync: syncQueue.length,
+            dbName: DB_NAME,
+            dbVersion: DB_VERSION
+        };
+    }
+
+    // ===== API PÚBLICA =====
+    return {
+        // Inicialización
+        init,
+        
+        // CRUD básico
+        insert,
+        getById,
+        getAll,
+        update,
+        delete: remove,
+        
+        // Consultas especializadas
+        queryByIndex,
+        getProgresoAlumno,
+        getSesionesAlumno,
+        getSesionesActivas,
+        getVehiculosPorCategoria,
+        getVehiculosActivos,
+        
+        // Estadísticas
+        calcularProgresoTotal,
+        calcularHorasPorTipo,
+        getDashboardStats,
+        
+        // Sincronización
+        sync,
+        getSyncQueue: () => [...syncQueue],
+        
+        // Backup y restore
+        exportData,
+        importData,
+        backup,
+        restore,
+        
+        // Limpieza
+        clearStore,
+        clearAll,
+        
+        // Utilidades
+        getDBStatus,
+        
+        // Constantes
+        STORES,
+        DB_NAME,
+        DB_VERSION
+    };
+})();
+
+// Inicializar automáticamente
+document.addEventListener('DOMContentLoaded', () => {
+    CEADB.init();
+});
+
+// Escuchar cambios de conexión
+window.addEventListener('online', () => {
+    console.log('🌐 Conexión restaurada, sincronizando...');
+    CEADB.sync();
+});
+
+// Exponer globalmente
+window.CEADB = CEADB;
