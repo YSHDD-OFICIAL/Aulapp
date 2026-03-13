@@ -1,433 +1,461 @@
 /**
  * app.js - Aplicación principal CEA Biométrico
+ * Versión: 1.0.0
  */
+
 const CEAApp = (function() {
+    // ===== ESTADO INTERNO =====
     let currentUser = null;
-    
-    return {
-        /**
-         * Inicializar aplicación
-         */
-        async init() {
-            console.log('🚀 Iniciando CEA Biométrico...');
+    let appInitialized = false;
+    let config = {
+        theme: 'light',
+        language: 'es',
+        heartbeatInterval: 30000,
+        offlineMode: false,
+        apiEndpoint: 'http://localhost:3000/api'
+    };
+
+    // ===== INICIALIZACIÓN =====
+    async function init() {
+        console.log('🚀 Iniciando CEA Biométrico...', new Date().toISOString());
+        
+        try {
+            // Cargar configuración
+            loadConfig();
             
             // Verificar autenticación
-            await this.checkAuth();
+            await checkAuth();
             
             // Configurar router
-            this.setupRoutes();
+            setupRoutes();
             
             // Cargar datos iniciales
-            await this.loadInitialData();
+            await loadInitialData();
             
             // Inicializar PWA
-            this.setupPWA();
+            setupPWA();
             
-            console.log('✅ Sistema listo');
-        },
-        
-        /**
-         * Configurar rutas SPA
-         */
-        setupRoutes() {
-            CEARouter.addRoute('/', () => {
-                this.renderLogin();
-            }, 'Iniciar Sesión - CEA');
+            // Configurar event listeners globales
+            setupGlobalEvents();
             
-            CEARouter.addRoute('/dashboard', () => {
-                if (!this.isAuthenticated()) {
-                    CEARouter.navigateTo('/');
-                    return;
-                }
-                this.renderDashboard();
-            }, 'Dashboard - CEA');
+            // Aplicar tema
+            applyTheme(config.theme);
             
-            CEARouter.addRoute('/biometrico', () => {
-                this.renderBiometricTest();
-            }, 'Prueba Biométrica - CEA');
+            appInitialized = true;
+            console.log('✅ Sistema inicializado correctamente');
             
-            CEARouter.addRoute('/exportar', () => {
-                this.renderExportPage();
-            }, 'Exportar Datos - CEA');
-        },
-        
-        /**
-         * Renderizar página de login
-         */
-        renderLogin() {
-            const app = document.getElementById('app');
-            app.innerHTML = `
-                <div class="login-container">
-                    <div class="login-card">
-                        <img src="/assets/images/logo.svg" alt="CEA Logo" class="login-logo">
-                        <h1>Acceso al Sistema</h1>
-                        <form id="login-form">
-                            <div class="form-group">
-                                <label for="email">Usuario o Email</label>
-                                <input type="email" id="email" required 
-                                       placeholder="usuario@email.com">
-                            </div>
-                            <div class="form-group">
-                                <label for="password">Contraseña</label>
-                                <input type="password" id="password" required 
-                                       placeholder="••••••••">
-                            </div>
-                            <button type="submit" class="btn-login">
-                                Ingresar
-                            </button>
-                            <a href="#" class="forgot-password">¿Olvidó su contraseña?</a>
-                        </form>
-                    </div>
-                </div>
-            `;
-            
-            document.getElementById('login-form').addEventListener('submit', async (e) => {
-                e.preventDefault();
-                const email = document.getElementById('email').value;
-                const password = document.getElementById('password').value;
-                
-                const result = await CEAAuth.login(email, password);
-                if (result.success) {
-                    CEARouter.navigateTo('/dashboard');
-                } else {
-                    alert('Credenciales incorrectas');
-                }
-            });
-        },
-        
-        /**
-         * Renderizar dashboard
-         */
-        async renderDashboard() {
-            const user = CEAAuth.getCurrentUser();
-            const stats = await CEADB.getDashboardStats(user.id);
-            
-            const app = document.getElementById('app');
-            app.innerHTML = `
-                <div class="dashboard">
-                    <header class="dashboard-header">
-                        <h1>Bienvenido, ${user.nombre_completo}</h1>
-                        <div class="user-info">
-                            <span>Categoría: <strong>${user.categoria_aspirada}</strong></span>
-                            <button id="btn-logout" class="btn-logout">Cerrar Sesión</button>
-                        </div>
-                    </header>
-                    
-                    <section class="progreso-total">
-                        <h2>Progreso Total</h2>
-                        <div class="circular-progress" data-progress="${stats.progresoTotal}">
-                            <svg viewBox="0 0 100 100">
-                                <circle class="bg" cx="50" cy="50" r="45"></circle>
-                                <circle class="progress" cx="50" cy="50" r="45"></circle>
-                                <text x="50" y="55" class="percentage">${stats.progresoTotal}%</text>
-                            </svg>
-                        </div>
-                    </section>
-                    
-                    <div class="modulos-grid">
-                        <div class="modulo-card">
-                            <h3>Teoría</h3>
-                            <div class="circular-progress small" data-progress="${stats.teoria}">
-                                <svg viewBox="0 0 100 100">
-                                    <circle class="bg" cx="50" cy="50" r="40"></circle>
-                                    <circle class="progress" cx="50" cy="50" r="40"></circle>
-                                    <text x="50" y="55" class="percentage">${stats.teoria}%</text>
-                                </svg>
-                            </div>
-                            <button class="btn-historial" data-tipo="teoria">
-                                Ver Historial
-                            </button>
-                        </div>
-                        
-                        <div class="modulo-card">
-                            <h3>Práctica</h3>
-                            <div class="circular-progress small" data-progress="${stats.practica}">
-                                <svg viewBox="0 0 100 100">
-                                    <circle class="bg" cx="50" cy="50" r="40"></circle>
-                                    <circle class="progress" cx="50" cy="50" r="40"></circle>
-                                    <text x="50" y="55" class="percentage">${stats.practica}%</text>
-                                </svg>
-                            </div>
-                            <button class="btn-historial" data-tipo="practica">
-                                Ver Historial
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            `;
-            
-            // Botón logout
-            document.getElementById('btn-logout').addEventListener('click', () => {
-                CEAAuth.logout();
-                CEARouter.navigateTo('/');
-            });
-        },
-        
-        /**
-         * Renderizar página de prueba biométrica
-         */
-        renderBiometricTest() {
-            const app = document.getElementById('app');
-            app.innerHTML = `
-                <div class="biometric-test">
-                    <h1>Prueba de Sistema Biométrico</h1>
-                    <div class="finger-test">
-                        <h3>Selector de Dedos</h3>
-                        <div id="finger-selector"></div>
-                        <button id="test-finger" class="btn-test">
-                            Probar Verificación
-                        </button>
-                    </div>
-                    
-                    <div class="session-test">
-                        <h3>Prueba de Sesión</h3>
-                        <button id="start-session" class="btn-start">
-                            Iniciar Sesión de Práctica
-                        </button>
-                        <button id="end-session" class="btn-end" disabled>
-                            Finalizar Sesión
-                        </button>
-                        <div id="session-timer"></div>
-                    </div>
-                    
-                    <div class="heartbeat-stats">
-                        <h3>Estadísticas Heartbeat</h3>
-                        <pre id="heartbeat-info"></pre>
-                    </div>
-                </div>
-            `;
-            
-            // Renderizar selector de dedos
-            document.getElementById('finger-selector').innerHTML = 
-                CEABiometric.renderFingerSelector('left_index');
-            
-            // Botón probar dedo
-            document.getElementById('test-finger').addEventListener('click', async () => {
-                const result = await CEABiometric.verifyStudentFinger('left_index', 1);
-                alert(result.verified ? '✅ Huella verificada' : '❌ Error de verificación');
-            });
-            
-            // Prueba de sesión
-            let currentSession = null;
-            
-            document.getElementById('start-session').addEventListener('click', async () => {
-                const result = await CEABiometric.startSession(1, 2, 1);
-                if (result.success) {
-                    currentSession = result.session;
-                    document.getElementById('start-session').disabled = true;
-                    document.getElementById('end-session').disabled = false;
-                    
-                    // Mostrar timer
-                    const timer = document.getElementById('session-timer');
-                    timer.innerHTML = '⏱️ Sesión iniciada...';
-                }
-            });
-            
-            document.getElementById('end-session').addEventListener('click', async () => {
-                const result = await CEABiometric.endSession();
-                if (result.success) {
-                    document.getElementById('start-session').disabled = false;
-                    document.getElementById('end-session').disabled = true;
-                    
-                    const timer = document.getElementById('session-timer');
-                    timer.innerHTML = `✅ Sesión finalizada - Duración: ${result.session.minutesTotal} minutos`;
-                    
-                    // Mostrar stats
-                    const stats = await CEAHeartbeat.getStats(result.session.id);
-                    document.getElementById('heartbeat-info').innerHTML = 
-                        JSON.stringify(stats, null, 2);
-                }
-            });
-        },
-        
-        /**
-         * Renderizar página de exportación
-         */
-        renderExportPage() {
-            const app = document.getElementById('app');
-            app.innerHTML = `
-                <div class="export-page">
-                    <h1>Exportar Datos</h1>
-                    
-                    <div class="export-options">
-                        <div class="export-card">
-                            <h3>Usuarios</h3>
-                            <button class="btn-export" data-store="usuarios">
-                                Exportar a CSV
-                            </button>
-                        </div>
-                        
-                        <div class="export-card">
-                            <h3>Vehículos</h3>
-                            <button class="btn-export" data-store="vehiculos">
-                                Exportar a CSV
-                            </button>
-                        </div>
-                        
-                        <div class="export-card">
-                            <h3>Sesiones</h3>
-                            <button class="btn-export" data-store="sesiones">
-                                Exportar a CSV
-                            </button>
-                        </div>
-                        
-                        <div class="export-card">
-                            <h3>Progreso de Estudiante</h3>
-                            <input type="number" id="student-id" placeholder="ID Estudiante">
-                            <button id="export-student">
-                                Exportar Progreso
-                            </button>
-                        </div>
-                    </div>
-                    
-                    <div class="import-section">
-                        <h2>Importar Datos</h2>
-                        <input type="file" id="csv-file" accept=".csv">
-                        <select id="import-store">
-                            <option value="usuarios">Usuarios</option>
-                            <option value="vehiculos">Vehículos</option>
-                            <option value="sesiones">Sesiones</option>
-                        </select>
-                        <button id="import-csv">Importar CSV</button>
-                    </div>
-                </div>
-            `;
-            
-            // Exportar
-            document.querySelectorAll('.btn-export').forEach(btn => {
-                btn.addEventListener('click', async (e) => {
-                    const store = e.target.dataset.store;
-                    await CEAExport.toCSV(store);
-                });
-            });
-            
-            // Exportar progreso estudiante
-            document.getElementById('export-student').addEventListener('click', async () => {
-                const studentId = document.getElementById('student-id').value;
-                if (!studentId) {
-                    alert('Ingrese ID de estudiante');
-                    return;
-                }
-                
-                const csv = await CEAExport.exportStudentProgress(parseInt(studentId));
-                const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv' });
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = `estudiante_${studentId}_progreso.csv`;
-                a.click();
-            });
-            
-            // Importar CSV
-            document.getElementById('import-csv').addEventListener('click', async () => {
-                const file = document.getElementById('csv-file').files[0];
-                const store = document.getElementById('import-store').value;
-                
-                if (!file) {
-                    alert('Seleccione un archivo CSV');
-                    return;
-                }
-                
-                try {
-                    const result = await CEAExport.importFromCSV(file, store);
-                    alert(result);
-                } catch (error) {
-                    alert('Error al importar: ' + error.message);
-                }
-            });
-        },
-        
-        /**
-         * Verificar autenticación
-         */
-        async checkAuth() {
-            currentUser = await CEAAuth.checkSession();
+            // Mostrar mensaje de bienvenida si hay usuario
             if (currentUser) {
-                console.log('👤 Usuario autenticado:', currentUser.nombre_completo);
+                showWelcomeMessage();
             }
-        },
-        
-        isAuthenticated() {
-            return currentUser !== null;
-        },
-        
-        /**
-         * Cargar datos iniciales
-         */
-        async loadInitialData() {
+            
+        } catch (error) {
+            console.error('❌ Error en inicialización:', error);
+            showError('Error al iniciar la aplicación. Recargue la página.');
+        }
+    }
+
+    // ===== CONFIGURACIÓN =====
+    function loadConfig() {
+        const savedConfig = localStorage.getItem('cea_config');
+        if (savedConfig) {
+            config = { ...config, ...JSON.parse(savedConfig) };
+        }
+        console.log('⚙️ Configuración cargada:', config);
+    }
+
+    function saveConfig() {
+        localStorage.setItem('cea_config', JSON.stringify(config));
+    }
+
+    // ===== AUTENTICACIÓN =====
+    async function checkAuth() {
+        const token = localStorage.getItem('auth_token');
+        if (token) {
             try {
-                // Verificar si hay datos
-                const usuarios = await CEADB.getAll('usuarios');
-                if (usuarios.length === 0) {
-                    // Cargar datos de ejemplo
-                    const response = await fetch('/data/initial-data.json');
-                    const data = await response.json();
-                    
-                    for (const usuario of data.usuarios) {
-                        await CEADB.insert('usuarios', usuario);
-                    }
-                    
-                    console.log('📦 Datos iniciales cargados');
+                // Verificar token con el servidor (simulado)
+                currentUser = await CEAAuth.validateToken(token);
+                if (currentUser) {
+                    console.log('👤 Usuario autenticado:', currentUser.nombre);
                 }
             } catch (error) {
-                console.error('Error cargando datos:', error);
-            }
-        },
-        
-        /**
-         * Configurar PWA
-         */
-        setupPWA() {
-            // Detectar instalación
-            window.addEventListener('beforeinstallprompt', (e) => {
-                e.preventDefault();
-                window.deferredPrompt = e;
-                
-                // Mostrar botón de instalación
-                this.showInstallButton();
-            });
-            
-            // Detectar modo offline
-            this.updateOnlineStatus();
-            window.addEventListener('online', this.updateOnlineStatus);
-            window.addEventListener('offline', this.updateOnlineStatus);
-        },
-        
-        showInstallButton() {
-            const btn = document.createElement('button');
-            btn.className = 'install-pwa';
-            btn.innerHTML = '📱 Instalar App';
-            btn.onclick = async () => {
-                const promptEvent = window.deferredPrompt;
-                if (!promptEvent) return;
-                
-                promptEvent.prompt();
-                const result = await promptEvent.userChoice;
-                console.log('Instalación:', result.outcome);
-                
-                delete window.deferredPrompt;
-                btn.remove();
-            };
-            
-            document.body.appendChild(btn);
-        },
-        
-        updateOnlineStatus() {
-            const status = document.createElement('div');
-            status.className = `online-status ${navigator.onLine ? 'online' : 'offline'}`;
-            status.innerHTML = navigator.onLine ? '🟢 En línea' : '🔴 Sin conexión';
-            
-            const existing = document.querySelector('.online-status');
-            if (existing) {
-                existing.replaceWith(status);
-            } else {
-                document.body.appendChild(status);
+                console.warn('Token inválido, redirigiendo a login');
+                localStorage.removeItem('auth_token');
+                currentUser = null;
             }
         }
-    };
-})();
+    }
 
-// Iniciar aplicación cuando el DOM esté listo
-document.addEventListener('DOMContentLoaded', () => {
-    CEAApp.init();
-});
+    function isAuthenticated() {
+        return currentUser !== null;
+    }
+
+    function getCurrentUser() {
+        return currentUser;
+    }
+
+    // ===== RUTAS =====
+    function setupRoutes() {
+        // Rutas públicas
+        CEARouter.addRoute('/', renderLogin, 'Iniciar Sesión - CEA');
+        CEARouter.addRoute('/login', renderLogin, 'Iniciar Sesión - CEA');
+        CEARouter.addRoute('/registro', renderRegister, 'Registro - CEA');
+        CEARouter.addRoute('/recuperar-password', renderRecoverPassword, 'Recuperar Contraseña - CEA');
+        
+        // Rutas protegidas (requieren autenticación)
+        CEARouter.addRoute('/dashboard', requireAuth(renderDashboard), 'Dashboard - CEA');
+        CEARouter.addRoute('/progreso', requireAuth(renderProgress), 'Mi Progreso - CEA');
+        CEARouter.addRoute('/horarios', requireAuth(renderSchedule), 'Horarios - CEA');
+        CEARouter.addRoute('/historial', requireAuth(renderHistory), 'Historial - CEA');
+        CEARouter.addRoute('/perfil', requireAuth(renderProfile), 'Mi Perfil - CEA');
+        
+        // Rutas biométricas
+        CEARouter.addRoute('/biometrico', requireAuth(renderBiometric), 'Verificación Biométrica - CEA');
+        CEARouter.addRoute('/biometrico/test', requireAuth(renderBiometricTest), 'Prueba Biométrica - CEA');
+        
+        // Rutas de exportación
+        CEARouter.addRoute('/exportar', requireAuth(renderExport), 'Exportar Datos - CEA');
+        
+        // Rutas de administración (requieren rol admin)
+        CEARouter.addRoute('/admin', requireAdmin(renderAdminDashboard), 'Panel Admin - CEA');
+        CEARouter.addRoute('/admin/usuarios', requireAdmin(renderAdminUsers), 'Usuarios - CEA');
+        CEARouter.addRoute('/admin/vehiculos', requireAdmin(renderAdminVehicles), 'Vehículos - CEA');
+        CEARouter.addRoute('/admin/reportes', requireAdmin(renderAdminReports), 'Reportes - CEA');
+        
+        // Ruta 404
+        CEARouter.addRoute('404', renderNotFound, 'Página no encontrada - CEA');
+        
+        // Iniciar router
+        CEARouter.init();
+    }
+
+    // Middleware para rutas protegidas
+    function requireAuth(handler) {
+        return function() {
+            if (!isAuthenticated()) {
+                CEARouter.navigateTo('/login');
+                return;
+            }
+            handler();
+        };
+    }
+
+    // Middleware para rutas de administrador
+    function requireAdmin(handler) {
+        return function() {
+            if (!isAuthenticated()) {
+                CEARouter.navigateTo('/login');
+                return;
+            }
+            if (currentUser.rol !== 'admin') {
+                CEARouter.navigateTo('/dashboard');
+                showNotification('Acceso no autorizado', 'error');
+                return;
+            }
+            handler();
+        };
+    }
+
+    // ===== RENDERIZADO DE PÁGINAS =====
+    function renderLogin() {
+        const app = document.getElementById('app');
+        app.innerHTML = `
+            <div class="login-container">
+                <div class="login-card animate-fadeInUp">
+                    <img src="/assets/images/logo.svg" alt="CEA Logo" class="login-logo">
+                    <h1>Acceso al Sistema</h1>
+                    
+                    <form id="login-form" class="login-form">
+                        <div class="form-group">
+                            <label for="email">
+                                <i class="icon-user"></i>
+                                Usuario o Email
+                            </label>
+                            <input type="email" 
+                                   id="email" 
+                                   required 
+                                   placeholder="usuario@email.com"
+                                   autocomplete="username">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="password">
+                                <i class="icon-lock"></i>
+                                Contraseña
+                            </label>
+                            <input type="password" 
+                                   id="password" 
+                                   required 
+                                   placeholder="••••••••"
+                                   autocomplete="current-password">
+                        </div>
+                        
+                        <div class="form-options">
+                            <label class="checkbox-group">
+                                <input type="checkbox" id="remember">
+                                <span class="checkbox-label">Recordarme</span>
+                            </label>
+                            <a href="/recuperar-password" class="forgot-password" data-link>
+                                ¿Olvidó su contraseña?
+                            </a>
+                        </div>
+                        
+                        <button type="submit" class="btn-login btn-primary">
+                            <span class="btn-text">Ingresar</span>
+                            <span class="btn-loader" style="display: none;"></span>
+                        </button>
+                    </form>
+                    
+                    <div class="login-footer">
+                        <p>¿No tienes cuenta? <a href="/registro" data-link>Regístrate aquí</a></p>
+                    </div>
+                    
+                    <div class="login-demo">
+                        <small>Demo: admin@cea.com / admin123</small>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        // Event listener del formulario
+        document.getElementById('login-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const remember = document.getElementById('remember').checked;
+            
+            // Mostrar loader
+            const btn = e.target.querySelector('button[type="submit"]');
+            const btnText = btn.querySelector('.btn-text');
+            const btnLoader = btn.querySelector('.btn-loader');
+            btnText.style.display = 'none';
+            btnLoader.style.display = 'inline-block';
+            
+            try {
+                const result = await CEAAuth.login(email, password);
+                
+                if (result.success) {
+                    currentUser = result.user;
+                    if (remember) {
+                        localStorage.setItem('auth_token', result.token);
+                    } else {
+                        sessionStorage.setItem('auth_token', result.token);
+                    }
+                    
+                    showNotification('¡Bienvenido!', 'success');
+                    CEARouter.navigateTo('/dashboard');
+                } else {
+                    showNotification(result.error || 'Credenciales incorrectas', 'error');
+                }
+            } catch (error) {
+                showNotification('Error de conexión', 'error');
+            } finally {
+                // Restaurar botón
+                btnText.style.display = 'inline';
+                btnLoader.style.display = 'none';
+            }
+        });
+    }
+
+    function renderRegister() {
+        const app = document.getElementById('app');
+        app.innerHTML = `
+            <div class="register-container">
+                <div class="register-card animate-fadeInUp">
+                    <h1>Registro de Estudiante</h1>
+                    <p class="subtitle">Completa tus datos para registrarte en el sistema</p>
+                    
+                    <form id="register-form" class="register-form">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Tipo de Documento</label>
+                                <select id="tipo-documento" required>
+                                    <option value="">Seleccione...</option>
+                                    <option value="CC">Cédula de Ciudadanía</option>
+                                    <option value="TI">Tarjeta de Identidad</option>
+                                    <option value="CE">Cédula de Extranjería</option>
+                                    <option value="PAS">Pasaporte</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>Número de Documento</label>
+                                <input type="text" id="numero-documento" required>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Nombre Completo</label>
+                            <input type="text" id="nombre" required>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Fecha de Nacimiento</label>
+                                <input type="date" id="fecha-nacimiento" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>Sexo</label>
+                                <select id="sexo" required>
+                                    <option value="">Seleccione...</option>
+                                    <option value="M">Masculino</option>
+                                    <option value="F">Femenino</option>
+                                    <option value="Otro">Otro</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Email</label>
+                            <input type="email" id="email" required>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Teléfono Móvil</label>
+                                <input type="tel" id="telefono" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>Teléfono Fijo</label>
+                                <input type="tel" id="telefono-fijo">
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Dirección</label>
+                            <input type="text" id="direccion" required>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Ciudad</label>
+                                <input type="text" id="ciudad" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>Departamento</label>
+                                <input type="text" id="departamento" required>
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Barrio</label>
+                                <input type="text" id="barrio" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>Código Postal</label>
+                                <input type="text" id="codigo-postal">
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Grupo Sanguíneo</label>
+                            <select id="grupo-sanguineo" required>
+                                <option value="">Seleccione...</option>
+                                <option value="A+">A+</option>
+                                <option value="A-">A-</option>
+                                <option value="B+">B+</option>
+                                <option value="B-">B-</option>
+                                <option value="AB+">AB+</option>
+                                <option value="AB-">AB-</option>
+                                <option value="O+">O+</option>
+                                <option value="O-">O-</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>EPS</label>
+                            <input type="text" id="eps" required>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Contacto de Emergencia - Nombre</label>
+                                <input type="text" id="contacto-nombre" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>Contacto de Emergencia - Teléfono</label>
+                                <input type="tel" id="contacto-telefono" required>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Categoría Aspirada</label>
+                            <select id="categoria" required>
+                                <option value="">Seleccione...</option>
+                                <option value="A1">A1 - Motocicleta hasta 125cc</option>
+                                <option value="A2">A2 - Motocicleta</option>
+                                <option value="B1">B1 - Automóvil</option>
+                                <option value="C1">C1 - Camión</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Contraseña</label>
+                                <input type="password" id="password" required>
+                                <small class="help-text">Mínimo 8 caracteres, 1 mayúscula, 1 número</small>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>Confirmar Contraseña</label>
+                                <input type="password" id="confirm-password" required>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group terms-group">
+                            <label class="checkbox-group">
+                                <input type="checkbox" id="terminos" required>
+                                <span class="checkbox-label">
+                                    Acepto los <a href="/terminos" target="_blank">términos y condiciones</a> 
+                                    y el tratamiento de datos personales (Habeas Data)
+                                </span>
+                            </label>
+                        </div>
+                        
+                        <button type="submit" class="btn-register btn-primary">
+                            Registrarse
+                        </button>
+                        
+                        <p class="login-link">
+                            ¿Ya tienes cuenta? <a href="/login" data-link>Inicia sesión aquí</a>
+                        </p>
+                    </form>
+                </div>
+            </div>
+        `;
+
+        // Validación de formulario
+        document.getElementById('register-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            // Validar contraseñas
+            const password = document.getElementById('password').value;
+            const confirm = document.getElementById('confirm-password').value;
+            
+            if (password !== confirm) {
+                showNotification('Las contraseñas no coinciden', 'error');
+                return;
+            }
+            
+            // Validar fortaleza de contraseña
+            const passwordValidation = CEAValidators.password(password);
+            if (!passwordValidation.valid) {
+                showNotification(passwordValidation.errors.join('. '), 'error');
+                return;
+            }
+            
+            // Validar email
+            const email = document.getElementById('email').value;
+            if (!CEAValidators.email(email).valid) {
+                showNotification('Email inválido', 'error');
+                return;
+            }
+            
+            // Validar telé
