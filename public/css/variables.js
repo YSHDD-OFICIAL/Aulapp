@@ -201,4 +201,4 @@
     --focus-outline: 2px solid var(--primary);
     --focus-outline-offset: 2px;
     --min-touch-target: 44px; /* Mínimo para elementos táctiles */
-}
+} 
