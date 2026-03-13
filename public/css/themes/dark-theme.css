@@ -1,0 +1,36 @@
+/**
+ * dark-theme.css - Tema oscuro
+ */
+
+:root[data-theme="dark"] {
+    --bg-primary: #1a1a1a;
+    --bg-secondary: #2d2d2d;
+    --text-primary: #ffffff;
+    --text-secondary: #b3b3b3;
+    --border-color: #404040;
+    
+    --card-bg: #2d2d2d;
+    --card-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+    
+    --input-bg: #333333;
+    --input-border: #4d4d4d;
+    --input-focus: #4a7db5;
+    
+    --table-header-bg: #404040;
+    --table-row-hover: #363636;
+    
+    --success-bg: #1e3a2a;
+    --success-text: #8bc34a;
+    --warning-bg: #3d2e1b;
+    --warning-text: #ffb74d;
+    --danger-bg: #3c1e1e;
+    --danger-text: #ef5350;
+    --info-bg: #1a2b3c;
+    --info-text: #64b5f6;
+    
+    --modal-overlay: rgba(0, 0, 0, 0.7);
+    --modal-bg: #2d2d2d;
+    
+    --tooltip-bg: #ffffff;
+    --tooltip-text: #1a1a1a;
+}
