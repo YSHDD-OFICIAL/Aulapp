@@ -1,0 +1,114 @@
+/**
+ * print.css - Estilos para impresión
+ */
+
+@media print {
+    @page {
+        size: A4;
+        margin: 2cm;
+    }
+    
+    body {
+        background: white;
+        color: black;
+        font-size: 12pt;
+        line-height: 1.5;
+    }
+    
+    .no-print,
+    .offline-status,
+    .install-pwa,
+    .heartbeat-indicator,
+    .modal-overlay,
+    .btn,
+    button,
+    .actions,
+    .table-controls,
+    .pagination {
+        display: none !important;
+    }
+    
+    .container,
+    .dashboard-container,
+    .admin-container {
+        max-width: 100%;
+        padding: 0;
+        margin: 0;
+    }
+    
+    .card,
+    .modulo-card {
+        break-inside: avoid;
+        box-shadow: none;
+        border: 1px solid #ccc;
+        margin-bottom: 1cm;
+    }
+    
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        page-break-inside: avoid;
+    }
+    
+    th {
+        background: #f0f0f0;
+        font-weight: bold;
+    }
+    
+    td, th {
+        border: 1px solid #ccc;
+        padding: 0.3cm;
+    }
+    
+    h1 {
+        font-size: 24pt;
+        margin-bottom: 1cm;
+    }
+    
+    h2 {
+        font-size: 18pt;
+        margin-top: 1cm;
+    }
+    
+    h3 {
+        font-size: 14pt;
+    }
+    
+    a {
+        color: black;
+        text-decoration: underline;
+    }
+    
+    a[href]::after {
+        content: " (" attr(href) ")";
+        font-size: 10pt;
+        font-style: italic;
+    }
+    
+    .header-print {
+        display: block;
+        text-align: center;
+        margin-bottom: 1cm;
+        border-bottom: 2px solid black;
+        padding-bottom: 0.5cm;
+    }
+    
+    .footer-print {
+        display: block;
+        text-align: center;
+        margin-top: 1cm;
+        border-top: 1px solid #ccc;
+        padding-top: 0.5cm;
+        font-size: 10pt;
+    }
+    
+    .progress-chart {
+        max-width: 300px;
+        margin: 0 auto;
+    }
+    
+    .circular-progress svg {
+        width: 150px;
+        height: 150px;
+    }
+}
