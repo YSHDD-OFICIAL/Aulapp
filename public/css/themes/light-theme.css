@@ -1,0 +1,36 @@
+/**
+ * light-theme.css - Tema claro
+ */
+
+:root[data-theme="light"] {
+    --bg-primary: #f8f9fa;
+    --bg-secondary: #ffffff;
+    --text-primary: #212529;
+    --text-secondary: #6c757d;
+    --border-color: #dee2e6;
+    
+    --card-bg: #ffffff;
+    --card-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    
+    --input-bg: #ffffff;
+    --input-border: #ced4da;
+    --input-focus: #2a5298;
+    
+    --table-header-bg: #e9ecef;
+    --table-row-hover: #f1f3f5;
+    
+    --success-bg: #d4edda;
+    --success-text: #155724;
+    --warning-bg: #fff3cd;
+    --warning-text: #856404;
+    --danger-bg: #f8d7da;
+    --danger-text: #721c24;
+    --info-bg: #d1ecf1;
+    --info-text: #0c5460;
+    
+    --modal-overlay: rgba(0, 0, 0, 0.5);
+    --modal-bg: #ffffff;
+    
+    --tooltip-bg: #212529;
+    --tooltip-text: #ffffff;
+}
